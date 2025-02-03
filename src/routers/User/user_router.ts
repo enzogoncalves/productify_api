@@ -1,9 +1,7 @@
-import express from 'express'
-import { userController } from "./user_controller";
+import { FastifyTypedInstance } from "../../utils/types";
 
-const userRoute = express.Router();
-
-userRoute.get('/signin', userController.signIn)
-userRoute.post('/create', userController.create)
-
-export { userRoute }
+export async function userRouter(app: FastifyTypedInstance) {
+	app.get('/', (req, reply) => {
+		reply.send('Hello World')
+	})
+}

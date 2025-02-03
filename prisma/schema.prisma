@@ -8,6 +8,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator zod {
+  provider = "zod-prisma-types"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -15,7 +19,7 @@ datasource db {
 
 model User {
   uid             String   @id @default(cuid())
-  email           String
+  email           String   @unique
   password        String
   name            String
   age             Int

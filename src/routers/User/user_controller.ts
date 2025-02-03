@@ -1,58 +1,56 @@
-import { Request, Response } from "express";
+// import { FastifyReply, FastifyRequest } from "fastify";
+// import bcrypt from 'bcrypt';
 
-import bcrypt from 'bcrypt'
-import { PrismaClient } from "@prisma/client";
+// const prisma = new PrismaClient()
 
-const prisma = new PrismaClient()
 
-export const userController = {
-	signIn: async (req: Request, res: Response) => {
-		const { email, password } = req.body;
+// export const userController = {
+// 	signIn: async (req: FastifyRequest, reply: FastifyReply) => {
+// 		const { email, password } = req.body;
+		
+		
 
-		console.log(email)
-		console.log(password)
+// 		const user = await prisma.user.findFirst({
+// 			where: {
+// 				email: email
+// 			},
+// 			select: {
+// 				password: true
+// 			}
+// 		})
 	
+// 		console.log(user)
 	
-		const user = await prisma.user.findFirst({
-			where: {
-				email: email
-			},
-			select: {
-				password: true
-			}
-		})
+// 		if	(user === null) {
+// 			reply.status(200).send({authorized: false})
+// 			return;
+// 		}
 	
-		console.log(user)
+// 		const isPasswordCorrect = await bcrypt.compare(password, user.password)
 	
-		if	(user === null) {
-			res.json({"response": "account not found"})
-			return;
-		}
+// 		if(isPasswordCorrect) {
+// 			reply.status(200).send({authorized: true})
+// 		} else {
+// 			reply.status(200).send({authorized: false})
+// 		}
+// 	}
+
+// 	// create: async (req: FastifyRequest, reply: FastifyReply) => {
+// 	// 	const {  name, email, age, profile_picture, password } = req.body
 	
-		const isPasswordCorrect = await bcrypt.compare(password, user.password)
+// 	// 	const passwordSalt = await bcrypt.genSalt()
+// 	// 	const hashedPassword = await bcrypt.hash(password, passwordSalt)
 	
-		if(isPasswordCorrect) {
-			res.json({"response": "correct password"})
-		} else {
-			res.json({"response": "incorrect password"})
-		}
-	},
-	create: async (req: Request, res: Response) => {
-		const {  name, email, age, profile_picture, password } = req.body
+// 	// 	const result = await prisma.user.create({
+// 	// 		data: {
+// 	// 			name,
+// 	// 			age,
+// 	// 			email,
+// 	// 			profile_picture,
+// 	// 			password: hashedPassword,
+// 	// 		}
+// 	// 	})
 	
-		const passwordSalt = await bcrypt.genSalt()
-		const hashedPassword = await bcrypt.hash(password, passwordSalt)
-	
-		const result = await prisma.user.create({
-			data: {
-				name,
-				age,
-				email,
-				profile_picture,
-				password: hashedPassword,
-			}
-		})
-	
-		res.json(result)
-	}
-}
+// 	// 	reply.send(result)
+// 	// }
+// }
