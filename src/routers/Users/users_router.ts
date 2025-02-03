@@ -4,6 +4,7 @@ import z from 'zod';
 import { FastifyTypedInstance } from "../../utils/types";
 import { UserSchema } from "../../../prisma/generated/zod";
 import { usersController } from "./users_controller";
+import { FastifyReply, FastifyRequest, HookHandlerDoneFunction } from "fastify";
 
 const prisma = new PrismaClient()
 
@@ -16,6 +17,17 @@ const createUserSchema = z.object({
 })
 
 export type CreateUserInput = z.infer<typeof createUserSchema>
+
+const midd1 = (req: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) => {
+	const { headers: { auth_token = '' }, body: attributes, routeOptions, method: action } = req;
+
+	console.log('Oi')
+	console.log(attributes)
+	console.log(routeOptions)
+	console.log(action)
+	console.log(auth_token)
+	done()
+}
 
 export async function usersRouter(app: FastifyTypedInstance) {
 	app.get('/', {
