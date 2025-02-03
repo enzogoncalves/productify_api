@@ -63,6 +63,6 @@ app.register(authRouter, { prefix: '/auth'})
 app.register(userRouter, { prefix: '/user'})
 app.register(usersRouter, { prefix: '/users'})
 
-app.listen({port: 3000}).then(() => {
+app.listen({host: '0.0.0.0', port: process.env.PORT ? Number(process.env.PORT) : 3000}).then(() => {
 	console.log('HTTP server running!')
 })
