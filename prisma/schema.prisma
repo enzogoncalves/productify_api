@@ -13,12 +13,12 @@ generator zod {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  uid             String   @id @default(cuid())
+  uid             String   @id @default(auto()) @map("_id") @db.ObjectId
   email           String   @unique
   password        String
   name            String
@@ -29,7 +29,7 @@ model User {
 }
 
 model Task {
-  id          String   @id @default(cuid())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   text        String
   completed   Boolean
