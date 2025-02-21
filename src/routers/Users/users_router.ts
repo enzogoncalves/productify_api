@@ -1,10 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import bcrypt from 'bcrypt';
 import z from 'zod';
-import { FastifyTypedInstance } from "../../utils/types";
 import { UserSchema } from "../../../prisma/generated/zod";
+import { FastifyTypedInstance } from "../../utils/types";
 import { usersController } from "./users_controller";
-import { FastifyReply, FastifyRequest, HookHandlerDoneFunction } from "fastify";
+import { authMiddleware } from "../../middlewares/auth";
 
 const prisma = new PrismaClient()
 
@@ -18,20 +17,9 @@ const createUserSchema = z.object({
 
 export type CreateUserInput = z.infer<typeof createUserSchema>
 
-const midd1 = (req: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) => {
-	const { headers: { auth_token = '' }, body: attributes, routeOptions, method: action } = req;
-
-	console.log('Oi')
-	console.log(attributes)
-	console.log(routeOptions)
-	console.log(action)
-	console.log(auth_token)
-	done()
-}
-
 export async function usersRouter(app: FastifyTypedInstance) {
 	app.get('/', {
-		preHandler: [app.authenticate],
+		preHandler: [authMiddleware],
 		schema: {
 			tags: ['users'],
 			description: 'List users',
@@ -47,7 +35,8 @@ export async function usersRouter(app: FastifyTypedInstance) {
 				profile_picture: true,
 				password: true,
 				updated_at: true,
-				created_at: true
+				created_at: true,
+				authTokenId: true
 			}
 		})
 
@@ -64,4 +53,16 @@ export async function usersRouter(app: FastifyTypedInstance) {
 			}
 		}
 	},  usersController.register)
+
+	app.post('/delete', {
+		schema: {
+			tags: ['users'],
+			description: 'Delete all users'
+		}
+	}, async (req, reply) => {
+		await prisma.user.deleteMany({})
+		await prisma.authToken.deleteMany({})
+
+		reply.send('all deleted')
+	})
 }

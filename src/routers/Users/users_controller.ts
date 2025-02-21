@@ -1,7 +1,9 @@
 
 import { FastifyReply, FastifyRequest } from "fastify";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { CreateUserInput } from "./users_router";
+import { addHours } from "date-fns";
+import { SignJWT } from "jose"
 import bcrypt from 'bcrypt'
 
 const prisma = new PrismaClient();
@@ -33,7 +35,7 @@ export const usersController = {
 					email,
 					profile_picture,
 					password: hashedPassword,
-					updated_at: new Date()
+					updated_at: new Date(),
 				},
 				select: {
 					uid: true,
@@ -44,9 +46,8 @@ export const usersController = {
 					password: true,
 					updated_at: true,
 					created_at: true
-				}		
+				}
 			})
-			return reply.status(201).send(user)
 		} catch(e) {
 			return reply.code(500).send(e)
 		}

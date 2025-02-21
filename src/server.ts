@@ -6,10 +6,10 @@ import fastifySwaggerUi from "@fastify/swagger-ui";
 import fjwt, { FastifyJWT } from '@fastify/jwt'
 import fCookie from '@fastify/cookie'
 
-
 import { userRouter } from "./routers/User/user_router";
 import { usersRouter } from "./routers/Users/users_router";
 import { authRouter } from "./routers/Auth/auth_router";
+import { taskRouter } from "./routers/Task/task_router";
 
 export const app = Fastify().withTypeProvider<ZodTypeProvider>();
 
@@ -62,6 +62,7 @@ app.register(fastifySwaggerUi, {
 app.register(authRouter, { prefix: '/auth'})
 app.register(userRouter, { prefix: '/user'})
 app.register(usersRouter, { prefix: '/users'})
+app.register(taskRouter, {prefix: '/task'})
 
 app.listen({host: '0.0.0.0', port: process.env.PORT ? Number(process.env.PORT) : 3000}).then(() => {
 	console.log('HTTP server running!')

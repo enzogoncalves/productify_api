@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-import { FastifyTypedInstance } from "../../utils/types";
 import z from 'zod';
+import { FastifyTypedInstance } from "../../utils/types";
 import { authController } from "./auth_controller";
 
 const loginUserSchema = z.object({
@@ -16,20 +15,38 @@ const loginUserUnauthorizedResponseSchema = z.object({
 
 export type loginUserUnauthorizedResponseType = z.infer<typeof loginUserUnauthorizedResponseSchema>
 
+const logoutUserSchema = z.object({
+	authTokenId: z.string(),
+	userId: z.string()
+})
+
+export type logoutUserInput = z.infer<typeof logoutUserSchema>
+
 export async function authRouter(app: FastifyTypedInstance) {
-	app.post('/login', {
+	app.post('/signin', {
 		schema: {
 			tags: ['auth'],
 			description: 'Login a user',
 			body: loginUserSchema,
 			response: {
 				200: z.object({
-					authorized: z.boolean()
+					authorized: z.boolean(),
 				}),
 				401: loginUserUnauthorizedResponseSchema
 			},
 		}
-	}, authController.login)
+	}, authController.signin)
 
-	app.delete('/logout', { preHandler: [app.authenticate]}, authController.logout)
+	app.delete('/signout', {
+		preHandler: [app.authenticate],
+		schema: {
+			tags: ['auth'],
+			body: logoutUserSchema,
+			response: {
+				200: z.object({
+					message: z.string()
+				})
+			}
+		}
+	}, authController.signout)
 }

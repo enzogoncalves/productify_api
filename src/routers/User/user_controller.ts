@@ -1,56 +1,34 @@
-// import { FastifyReply, FastifyRequest } from "fastify";
-// import bcrypt from 'bcrypt';
+import { FastifyReply, FastifyRequest } from "fastify";
+import { PrismaClient } from "@prisma/client";
 
-// const prisma = new PrismaClient()
+const prisma = new PrismaClient()
 
+export const userController = {
+	user: async (req: FastifyRequest, reply: FastifyReply) => {
+		const { user_id } = req.headers;
 
-// export const userController = {
-// 	signIn: async (req: FastifyRequest, reply: FastifyReply) => {
-// 		const { email, password } = req.body;
+		console.log('aqui')
+		console.log(user_id)
 		
-		
+		await prisma.user.findFirst({
+			where: {
+				uid: user_id as string
+			}
+		})
+		.then((user) => {
+			if(!user) {
+				return reply.status(500).send('User not found')
+			}
 
-// 		const user = await prisma.user.findFirst({
-// 			where: {
-// 				email: email
-// 			},
-// 			select: {
-// 				password: true
-// 			}
-// 		})
-	
-// 		console.log(user)
-	
-// 		if	(user === null) {
-// 			reply.status(200).send({authorized: false})
-// 			return;
-// 		}
-	
-// 		const isPasswordCorrect = await bcrypt.compare(password, user.password)
-	
-// 		if(isPasswordCorrect) {
-// 			reply.status(200).send({authorized: true})
-// 		} else {
-// 			reply.status(200).send({authorized: false})
-// 		}
-// 	}
+			console.log('aqui2')
 
-// 	// create: async (req: FastifyRequest, reply: FastifyReply) => {
-// 	// 	const {  name, email, age, profile_picture, password } = req.body
-	
-// 	// 	const passwordSalt = await bcrypt.genSalt()
-// 	// 	const hashedPassword = await bcrypt.hash(password, passwordSalt)
-	
-// 	// 	const result = await prisma.user.create({
-// 	// 		data: {
-// 	// 			name,
-// 	// 			age,
-// 	// 			email,
-// 	// 			profile_picture,
-// 	// 			password: hashedPassword,
-// 	// 		}
-// 	// 	})
-	
-// 	// 	reply.send(result)
-// 	// }
-// }
+			console.log(user)
+
+			return reply.status(200).send(user)
+		})
+		.catch((e) => {
+			console.log(e)
+			return reply.status(500).send('Something went wrong. Try Again!')
+		})
+	}
+}
